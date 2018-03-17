@@ -4,6 +4,7 @@ import org.apache.ftpserver.ftplet.*;
 
 public class MiniUserManager implements UserManager {
 
+
     public User getUserByName(String s) throws FtpException {
         return null;
     }

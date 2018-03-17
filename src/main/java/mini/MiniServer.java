@@ -18,40 +18,17 @@ public class MiniServer
 
     public void init_server(){
         serverFactory=new FtpServerFactory();
-        ConnectionConfigFactory configFactory=new ConnectionConfigFactory();
         listenerFactory=new ListenerFactory();
         listenerFactory.setPort(PORT);                                           //Set the port to listen to
         serverFactory.addListener("default", listenerFactory.createListener());  //Add as the default listener of the server
 
-        Ftplet regFtplet=new RegFtplet(serverFactory);
+        Ftplet regFtplet=new RegFtplet(serverFactory);                              //Custom Ftplet to support Registration
         serverFactory.getFtplets().put("SIGNUP", regFtplet);
-
-
-//
-//        UserFactory userFactory=new UserFactory();
-//        userFactory.setName(DEFAULT_LOGIN);
-//
-//        userFactory.setPassword(DEFAULT_LOGIN);
-//        userFactory.setEnabled(true);
-//        try {
-//            serverFactory.getUserManager().save(userFactory.createUser());
-//        } catch (FtpException e) {
-//            e.printStackTrace();
-//        }
-
-
         FtpServer s=serverFactory.createServer();                                 // create the server
-
-
-
-
 
         try {
             System.out.println("Starting the server");
             s.start();
-
-
-
 
 
         } catch (FtpException e) {
