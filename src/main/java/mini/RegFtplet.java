@@ -26,14 +26,6 @@ public class RegFtplet extends DefaultFtplet {
     private boolean REGISTRATION_SUCCESS=false;
     FtpServerFactory serverFactory;
 
-    public void setREGISTRATION_SUCCESS(boolean REGISTRATION_SUCCESS) {
-        this.REGISTRATION_SUCCESS = REGISTRATION_SUCCESS;
-    }
-
-    public boolean isREGISTRATION_SUCCESS() {
-        return REGISTRATION_SUCCESS;
-    }
-
     public RegFtplet(FtpServerFactory serverFactory) {
         this.serverFactory = serverFactory;
     }
@@ -53,15 +45,17 @@ public class RegFtplet extends DefaultFtplet {
     @Override
     public FtpletResult afterCommand(FtpSession session, FtpRequest request, FtpReply reply) throws FtpException, IOException {
 
-        if(this.REGISTRATION_SUCCESS){
+        DefaultFtpReply myReply;
+        if(request.toString().startsWith(REGISTER_COMMAND)) {
+            if (this.REGISTRATION_SUCCESS) {
+                myReply = new DefaultFtpReply(REG_SUCCESS_CODE, REG_SUCCESS_MESSAGE);
+            } else {
+                myReply = new DefaultFtpReply(REG_ERROR_CODE, REG_ERROR_MESSAGE);
+            }
+            session.write(myReply);
+            return super.afterCommand(session, request, myReply);
 
-           reply =new GoodRegistrationReply(REG_SUCCESS_CODE, REG_SUCCESS_MESSAGE);
         }
-        else{
-            reply=new BadRegistrationReply(REG_ERROR_CODE, REG_ERROR_MESSAGE);
-        }
-        String replyMsg=reply.toString();
-        System.out.println(replyMsg);
         return super.afterCommand(session, request, reply);
     }
 
