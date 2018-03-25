@@ -23,8 +23,8 @@ public class RegFtplet extends DefaultFtplet {
     static String REGISTER_COMMAND= "USER !REGISTER!";
     private static final String REG_ERROR_MESSAGE="Bad username or password.";
     private static final int MINIMAL_USERNAME_LENGTH=3;
-
     FtpServerFactory serverFactory;
+
     public RegFtplet(FtpServerFactory serverFactory){
         this.serverFactory=serverFactory;
     }
@@ -43,20 +43,23 @@ public class RegFtplet extends DefaultFtplet {
      */
     private void handleRegisterCommand(FtpSession session,FtpRequest request) {
         String[] user_pass=request.getArgument().split(" ");    //user_pass=!REGISTER! user pass
-        String username=user_pass[1];               // the username to register
-        String password=user_pass[2];               //the password
-        try {
-            if (isLegalRegistration(username, password)) {
-                serverFactory.getUserManager().save(createUser(username,password));
+        if(user_pass.length==0) {
+            String username = user_pass[1];               // the username to register
+            String password = user_pass[2];               //the password
+            try {
+                if (isLegalRegistration(username, password)) {
+                    serverFactory.getUserManager().save(createUser(username, password));
 
-            }
-            else {
-                //TODO:Send back an error to the user! (CHECK IF WORKS)
-                session.write(new BadRegistrationReply(600, REG_ERROR_MESSAGE));
+                } else {
+                    //TODO:Send back an error to the user! (CHECK IF WORKS)
+                    session.write(new BadRegistrationReply(600, REG_ERROR_MESSAGE));
+                }
+            } catch (FtpException e) {
+                e.printStackTrace();
             }
         }
-        catch (FtpException e) {
-            e.printStackTrace();
+        else{
+            //TODO: ERROR IN USER INPUT
         }
     }
 
