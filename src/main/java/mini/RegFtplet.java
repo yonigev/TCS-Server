@@ -21,7 +21,6 @@ public class RegFtplet extends DefaultFtplet {
     private static final int REG_SUCCESS_CODE=601;
     private static final String REG_ERROR_MESSAGE = "Bad username or password.";
     private static final String REG_SUCCESS_MESSAGE = "Registration Successful";
-
     private static final int MINIMAL_USERNAME_LENGTH = 3;
     private boolean REGISTRATION_SUCCESS=false;
     FtpServerFactory serverFactory;
@@ -43,6 +42,9 @@ public class RegFtplet extends DefaultFtplet {
     }
 
     @Override
+    /**
+     * If the request is a Registration request, send the client a reply.
+     */
     public FtpletResult afterCommand(FtpSession session, FtpRequest request, FtpReply reply) throws FtpException, IOException {
 
         DefaultFtpReply myReply;
@@ -58,8 +60,6 @@ public class RegFtplet extends DefaultFtplet {
         }
         return super.afterCommand(session, request, reply);
     }
-
-
 
 
     /**
@@ -79,14 +79,12 @@ public class RegFtplet extends DefaultFtplet {
                     if(toSave!=null) {
                         serverFactory.getUserManager().save(toSave);
                         return true;
-
                     }
                     else{
                         //TODO: Handles double registration! (create a special reply for that).
                         //session.write(new BadRegistrationReply(REG_ERROR_CODE, REG_ERROR_MESSAGE));
                         return false;
                     }
-
                 }
                 else {
                     //TODO:Send back an error to the user! (CHECK IF WORKS)
@@ -103,6 +101,12 @@ public class RegFtplet extends DefaultFtplet {
         return false;
     }
 
+    /**
+     * Return a new user with a Directory and Write permissions.
+     * @param username
+     * @param password
+     * @return
+     */
     private User createUser(String username, String password) {
         try {
             File dir = new File("./" + username);
