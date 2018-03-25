@@ -130,7 +130,6 @@ public class RegFtplet extends DefaultFtplet {
 
     /**
      * Derive 3 keys from one Master key, in a deterministic manner
-     *
      * @param masterKey
      * @return
      */
@@ -138,6 +137,7 @@ public class RegFtplet extends DefaultFtplet {
         String[] keys = new String[3];
 
 
+        return keys;
     }
 
 }
