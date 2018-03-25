@@ -1,13 +1,8 @@
 package mini;
 
-import org.apache.ftpserver.FtpServer;
+import mini.ServerReplies.BadRegistrationReply;
 import org.apache.ftpserver.FtpServerFactory;
-import org.apache.ftpserver.command.Command;
-import org.apache.ftpserver.command.CommandFactory;
-import org.apache.ftpserver.command.CommandFactoryFactory;
 import org.apache.ftpserver.ftplet.*;
-import org.apache.ftpserver.usermanager.UserFactory;
-import org.apache.ftpserver.usermanager.UserManagerFactory;
 import org.apache.ftpserver.usermanager.impl.BaseUser;
 import org.apache.ftpserver.usermanager.impl.WritePermission;
 
@@ -30,9 +25,13 @@ public class RegFtplet extends DefaultFtplet {
     }
 
     @Override
+    /**
+     * Handles cases where the Client sends a REGISTER Request
+     */
     public FtpletResult beforeCommand(FtpSession session, FtpRequest request) throws FtpException, IOException {
         if (request.toString().startsWith(REGISTER_COMMAND)) {        //if Registration command
             handleRegisterCommand(session, request);                 //Handle it.
+
             return FtpletResult.DEFAULT;
         }
         return super.beforeCommand(session, request);
@@ -51,7 +50,13 @@ public class RegFtplet extends DefaultFtplet {
             String password = user_pass[2];               //the password
             try {
                 if (isLegalRegistration(username, password)) {
-                    serverFactory.getUserManager().save(createUser(username, password));
+                    User toSave=createUser(username,password);
+                    if(toSave!=null)
+                        serverFactory.getUserManager().save(toSave);
+                    else{
+                        //TODO: Handles double registration! (create a special reply for that).
+                        session.write(new BadRegistrationReply(600, REG_ERROR_MESSAGE));
+                    }
 
                 } else {
                     //TODO:Send back an error to the user! (CHECK IF WORKS)
@@ -66,24 +71,28 @@ public class RegFtplet extends DefaultFtplet {
     }
 
     private User createUser(String username, String password) {
-        File dir = new File("/" + username);
-        boolean dirCreated=dir.mkdir();
-        BaseUser toAdd = new BaseUser();
-        if(dirCreated) {
-            //create new user
-            toAdd.setName(username);
-            toAdd.setPassword(password);
-            toAdd.setHomeDirectory("/" + username);
-            List<Authority> authorities = new ArrayList<Authority>();
-            authorities.add(new WritePermission());
-            toAdd.setAuthorities(authorities);
-            return toAdd;
+        try {
+            File dir = new File("./" + username);
+            boolean dirCreated = dir.mkdirs();
+            BaseUser toAdd = new BaseUser();
+            if (dirCreated) {
+                //create new user
+                toAdd.setName(username);
+                toAdd.setPassword(password);
+                toAdd.setHomeDirectory("./" + username);
+                List<Authority> authorities = new ArrayList<Authority>();
+                authorities.add(new WritePermission());
+                toAdd.setAuthorities(authorities);
+                return toAdd;
+            } else {
+                return null;
+            }
         }
-        else{
-            //TODO handle dir creation failed
+        catch (RuntimeException e){
+            System.out.println("BAD");
             return null;
-        }
 
+        }
     }
 
     /**

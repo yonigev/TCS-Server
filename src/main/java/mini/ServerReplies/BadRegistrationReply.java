@@ -1,4 +1,4 @@
-package mini;
+package mini.ServerReplies;
 
 import org.apache.ftpserver.ftplet.DefaultFtpReply;
 import org.apache.ftpserver.ftplet.FtpReply;

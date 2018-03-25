@@ -39,6 +39,7 @@ public class AuxFunctions {
      * @throws FtpException
      */
     public static boolean usernameAvailable(String username, FtpServerFactory factory) throws FtpException {
+        String[] allUserNames=factory.getUserManager().getAllUserNames();
         for(String someUser:factory.getUserManager().getAllUserNames()){
             if(someUser.equals(username))
                 return false;
