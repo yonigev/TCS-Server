@@ -1,6 +1,7 @@
 package mini;
 
 import mini.ServerReplies.BadRegistrationReply;
+import mini.ServerReplies.GoodRegistrationReply;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.*;
 import org.apache.ftpserver.usermanager.impl.BaseUser;
@@ -12,13 +13,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by gevaj on 3/8/18.
+ * Represents a Registration Request handler.
  */
 public class RegFtplet extends DefaultFtplet {
-    static String REGISTER_COMMAND = "USER !REGISTER!";
+    static final String REGISTER_COMMAND = "USER !REGISTER!";
+    private static final int REG_ERROR_CODE=600;
+    private static final int REG_SUCCESS_CODE=601;
     private static final String REG_ERROR_MESSAGE = "Bad username or password.";
+    private static final String REG_SUCCESS_MESSAGE = "Registration Successful";
+
     private static final int MINIMAL_USERNAME_LENGTH = 3;
+    private boolean REGISTRATION_SUCCESS=false;
     FtpServerFactory serverFactory;
+
+    public void setREGISTRATION_SUCCESS(boolean REGISTRATION_SUCCESS) {
+        this.REGISTRATION_SUCCESS = REGISTRATION_SUCCESS;
+    }
+
+    public boolean isREGISTRATION_SUCCESS() {
+        return REGISTRATION_SUCCESS;
+    }
 
     public RegFtplet(FtpServerFactory serverFactory) {
         this.serverFactory = serverFactory;
@@ -30,12 +44,29 @@ public class RegFtplet extends DefaultFtplet {
      */
     public FtpletResult beforeCommand(FtpSession session, FtpRequest request) throws FtpException, IOException {
         if (request.toString().startsWith(REGISTER_COMMAND)) {        //if Registration command
-            handleRegisterCommand(session, request);                 //Handle it.
-
+            this.REGISTRATION_SUCCESS=handleRegisterCommand(session, request);                 //Handle it.
             return FtpletResult.DEFAULT;
         }
         return super.beforeCommand(session, request);
     }
+
+    @Override
+    public FtpletResult afterCommand(FtpSession session, FtpRequest request, FtpReply reply) throws FtpException, IOException {
+
+        if(this.REGISTRATION_SUCCESS){
+
+           reply =new GoodRegistrationReply(REG_SUCCESS_CODE, REG_SUCCESS_MESSAGE);
+        }
+        else{
+            reply=new BadRegistrationReply(REG_ERROR_CODE, REG_ERROR_MESSAGE);
+        }
+        String replyMsg=reply.toString();
+        System.out.println(replyMsg);
+        return super.afterCommand(session, request, reply);
+    }
+
+
+
 
     /**
      * Called when receiving USER !REGISTER! command
@@ -43,7 +74,7 @@ public class RegFtplet extends DefaultFtplet {
      * @param session
      * @param request
      */
-    private void handleRegisterCommand(FtpSession session, FtpRequest request) {
+    private boolean handleRegisterCommand(FtpSession session, FtpRequest request) {
         String[] user_pass = request.getArgument().split(" ");    //user_pass=!REGISTER! user pass
         if (user_pass.length == 3) {
             String username = user_pass[1];               // the username to register
@@ -51,23 +82,31 @@ public class RegFtplet extends DefaultFtplet {
             try {
                 if (isLegalRegistration(username, password)) {
                     User toSave=createUser(username,password);
-                    if(toSave!=null)
+                    if(toSave!=null) {
                         serverFactory.getUserManager().save(toSave);
+                        return true;
+
+                    }
                     else{
                         //TODO: Handles double registration! (create a special reply for that).
-                        session.write(new BadRegistrationReply(600, REG_ERROR_MESSAGE));
+                        //session.write(new BadRegistrationReply(REG_ERROR_CODE, REG_ERROR_MESSAGE));
+                        return false;
                     }
 
-                } else {
-                    //TODO:Send back an error to the user! (CHECK IF WORKS)
-                    session.write(new BadRegistrationReply(600, REG_ERROR_MESSAGE));
                 }
-            } catch (FtpException e) {
+                else {
+                    //TODO:Send back an error to the user! (CHECK IF WORKS)
+                    //session.write(new BadRegistrationReply(REG_ERROR_CODE, REG_ERROR_MESSAGE));
+                    return false;
+                }
+            }
+            catch (FtpException e) {
                 e.printStackTrace();
             }
         } else {
             //TODO: ERROR IN USER INPUT
         }
+        return false;
     }
 
     private User createUser(String username, String password) {
