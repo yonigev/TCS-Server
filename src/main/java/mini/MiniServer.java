@@ -7,6 +7,7 @@ import org.apache.ftpserver.usermanager.PasswordEncryptor;
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
 import org.apache.ftpserver.usermanager.SaltedPasswordEncryptor;
 import org.apache.ftpserver.usermanager.UserManagerFactory;
+import org.apache.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,10 +17,10 @@ import java.util.Map;
 public class MiniServer {
     private static final Integer PORT = 44444;
     private static final String USERS_FILE="./users";
-    FtpServerFactory serverFactory;                                             //server factory
-    ListenerFactory listenerFactory;                                           //listener factory
+    FtpServerFactory serverFactory;                                             // server factory
+    ListenerFactory listenerFactory;                                            // listener factory
     File users;
-
+    Logger logger= Logger.getLogger("server_logger");
 
     public void init_server() {
 
@@ -31,14 +32,12 @@ public class MiniServer {
         configUserManager(serverFactory);                                               //Config the UserManager to user Salted Passwords
         Ftplet regFtplet = new RegFtplet(serverFactory);                              //Custom Ftplet to support Registration
         serverFactory.getFtplets().put("SIGNUP", regFtplet);
-
         FtpServer s = serverFactory.createServer();                                 // create the server
 
         try {
             System.out.println("Starting the server");
+            System.out.println(System.getProperty("user.dir"));
             s.start();
-
-
         } catch (FtpException e) {
             e.printStackTrace();
         }
