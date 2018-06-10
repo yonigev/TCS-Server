@@ -64,9 +64,7 @@ public class MiniServer {
 
     public static void main(String[] args) {
         MiniServer ms = new MiniServer();
-
         ms.init_server();
-
 
     }
 
