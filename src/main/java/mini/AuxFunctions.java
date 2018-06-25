@@ -3,6 +3,10 @@ package mini;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.FtpException;
 
+/**
+ * And Auxiliary class containing functions for different parts of the codes
+ * mainly for cleaner code.
+ */
 public class AuxFunctions {
 
     /**

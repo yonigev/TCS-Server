@@ -1,7 +1,5 @@
 package mini;
 
-import mini.ServerReplies.BadRegistrationReply;
-import mini.ServerReplies.GoodRegistrationReply;
 import org.apache.ftpserver.FtpServerFactory;
 import org.apache.ftpserver.ftplet.*;
 import org.apache.ftpserver.usermanager.impl.BaseUser;
@@ -16,7 +14,7 @@ import java.util.List;
  * Represents a Registration Request handler.
  */
 public class RegFtplet extends DefaultFtplet {
-    static final String REGISTER_COMMAND = "USER !REGISTER!";
+    private static final String REGISTER_COMMAND = "USER !REGISTER!";
     private static final int REG_ERROR_CODE=600;
     private static final int REG_SUCCESS_CODE=601;
     private static final String REG_ERROR_MESSAGE = "Bad username or password.";
@@ -25,14 +23,18 @@ public class RegFtplet extends DefaultFtplet {
     private boolean REGISTRATION_SUCCESS=false;
     FtpServerFactory serverFactory;
 
+    /**
+     * Constructor
+     * @param serverFactory
+     */
     public RegFtplet(FtpServerFactory serverFactory) {
         this.serverFactory = serverFactory;
     }
 
-    @Override
     /**
      * Handles cases where the Client sends a REGISTER Request
      */
+    @Override
     public FtpletResult beforeCommand(FtpSession session, FtpRequest request) throws FtpException, IOException {
         if (request.toString().startsWith(REGISTER_COMMAND)) {        //if Registration command
             this.REGISTRATION_SUCCESS=handleRegisterCommand(session, request);                 //Handle it.
@@ -41,10 +43,10 @@ public class RegFtplet extends DefaultFtplet {
         return super.beforeCommand(session, request);
     }
 
-    @Override
     /**
      * If the request is a Registration request, send the client a reply.
      */
+    @Override
     public FtpletResult afterCommand(FtpSession session, FtpRequest request, FtpReply reply) throws FtpException, IOException {
 
         DefaultFtpReply myReply;
@@ -174,16 +176,6 @@ public class RegFtplet extends DefaultFtplet {
         return true;
     }
 
-    /**
-     * Derive 3 keys from one Master key, in a deterministic manner
-     * @param masterKey
-     * @return
-     */
-    private String[] deriveKeys(String masterKey) {
-        String[] keys = new String[3];
 
-
-        return keys;
-    }
 
 }

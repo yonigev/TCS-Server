@@ -9,21 +9,70 @@ import org.apache.ftpserver.usermanager.SaltedPasswordEncryptor;
 import org.apache.ftpserver.usermanager.UserManagerFactory;
 import org.apache.log4j.Logger;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 
-
+/**
+ * An FTP Server, Based on Apache FTP. Added ability to receive a Registration request
+ */
 public class MiniServer {
     private static final Integer PORT = 44444;
     private static final String USERS_FILE="./users";
     FtpServerFactory serverFactory;                                             // server factory
     ListenerFactory listenerFactory;                                            // listener factory
     File users;
-    Logger logger= Logger.getLogger("server_logger");
+    static TrayIcon trayIcon=new TrayIcon(createIcon("icon.png",""));
 
+    /**
+     * Create an image for an icon
+     * @param path
+     * @param description
+     * @return
+     */
+    protected static Image createIcon(String path,String description){
+        URL imageURL = MiniServer.class.getResource(path);
+        if (imageURL == null) {
+            System.err.println(path + " not found");
+            return null;
+        } else {
+            return (new ImageIcon(imageURL, description)).getImage();
+        }
+    }
+
+    /**
+     * Set a system tray icon for the Server
+     */
+    private static void setTrayIcon(){
+        SystemTray tray=SystemTray.getSystemTray();
+        try {
+            if(trayIcon!=null)
+                trayIcon.setImageAutoSize(true);
+                tray.add(trayIcon);
+
+
+        } catch (AWTException e) {
+            e.printStackTrace();
+        }
+        PopupMenu popupMenu=new PopupMenu();
+        MenuItem exit=new MenuItem("Exit");
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                tray.remove(trayIcon);
+                System.exit(0);
+            }
+        });
+        trayIcon.setPopupMenu(popupMenu);
+        popupMenu.add(exit);
+    }
     public void init_server() {
-
+        setTrayIcon();
         serverFactory = new FtpServerFactory();
         listenerFactory = new ListenerFactory();
         listenerFactory.setPort(PORT);                                           //Set the port to listen to
@@ -46,6 +95,7 @@ public class MiniServer {
 
     /**
      * Make the UserManager use a SaltedPasswordEncryptor.
+     * Uses MD5 hash (128 bit)
      */
     private void configUserManager(FtpServerFactory serverFactory) {
         PropertiesUserManagerFactory factory=new PropertiesUserManagerFactory();
@@ -62,8 +112,13 @@ public class MiniServer {
     }
 
 
+    /**
+     * Create a new Server Instance and initiate it.
+     * @param args
+     */
     public static void main(String[] args) {
         MiniServer ms = new MiniServer();
+        SystemTray.getSystemTray();
         ms.init_server();
 
     }

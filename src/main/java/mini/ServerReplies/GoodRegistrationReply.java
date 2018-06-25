@@ -2,6 +2,10 @@ package mini.ServerReplies;
 
 import org.apache.ftpserver.ftplet.DefaultFtpReply;
 
+
+/**
+ * Represets a Reply sent back to the client, when registeration is Successful
+ */
 public class GoodRegistrationReply extends DefaultFtpReply {
     //private static final String ERROR_MESSAGE="Bad username or password.";
     private String message;
