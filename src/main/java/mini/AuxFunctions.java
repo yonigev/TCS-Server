@@ -10,7 +10,7 @@ import org.apache.ftpserver.ftplet.FtpException;
 public class AuxFunctions {
 
     /**
-     * @param s
+     * @param s the string
      * @return  True if s contains a letter. else-False.
      */
     public static boolean hasLetters(String s){
@@ -23,7 +23,7 @@ public class AuxFunctions {
     }
 
     /**
-     * @param s
+     * @param s the string
      * @return True if String s has only Digits OR Letters. (Non-Illegal characters)
      */
     public static boolean allDigitsOrLetters(String s){
@@ -37,10 +37,10 @@ public class AuxFunctions {
 
     /**
      * Indicates if a given username is available-meaning it does not exist yet.
-     * @param username
-     * @param factory
-     * @return
-     * @throws FtpException
+     * @param username the given Username
+     * @param factory the FtpServerFactory to check
+     * @return true if available
+     * @throws FtpException exception.
      */
     public static boolean usernameAvailable(String username, FtpServerFactory factory) throws FtpException {
         String[] allUserNames=factory.getUserManager().getAllUserNames();

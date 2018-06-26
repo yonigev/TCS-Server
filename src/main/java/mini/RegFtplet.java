@@ -25,7 +25,7 @@ public class RegFtplet extends DefaultFtplet {
 
     /**
      * Constructor
-     * @param serverFactory
+     * @param serverFactory the FtpServerFactory to use .
      */
     public RegFtplet(FtpServerFactory serverFactory) {
         this.serverFactory = serverFactory;
@@ -83,22 +83,17 @@ public class RegFtplet extends DefaultFtplet {
                         return true;
                     }
                     else{
-                        //TODO: Handles double registration! (create a special reply for that).
-                        //session.write(new BadRegistrationReply(REG_ERROR_CODE, REG_ERROR_MESSAGE));
+
                         return false;
                     }
                 }
                 else {
-                    //TODO:Send back an error to the user! (CHECK IF WORKS)
-                    //session.write(new BadRegistrationReply(REG_ERROR_CODE, REG_ERROR_MESSAGE));
                     return false;
                 }
             }
             catch (FtpException e) {
                 e.printStackTrace();
             }
-        } else {
-            //TODO: ERROR IN USER INPUT
         }
         return false;
     }
@@ -173,7 +168,7 @@ public class RegFtplet extends DefaultFtplet {
      * @return
      */
     private boolean isLegalPassword(String password) {
-        return true;
+        return password.length() > 3;
     }
 
 

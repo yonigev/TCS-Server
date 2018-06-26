@@ -6,8 +6,6 @@ import org.apache.ftpserver.listener.ListenerFactory;
 import org.apache.ftpserver.usermanager.PasswordEncryptor;
 import org.apache.ftpserver.usermanager.PropertiesUserManagerFactory;
 import org.apache.ftpserver.usermanager.SaltedPasswordEncryptor;
-import org.apache.ftpserver.usermanager.UserManagerFactory;
-import org.apache.log4j.Logger;
 
 import javax.swing.*;
 import java.awt.*;
@@ -16,7 +14,6 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
 
 /**
  * An FTP Server, Based on Apache FTP. Added ability to receive a Registration request
@@ -31,9 +28,9 @@ public class MiniServer {
 
     /**
      * Create an image for an icon
-     * @param path
-     * @param description
-     * @return
+     * @param path the image path
+     * @param description description for the image
+     * @return an Image
      */
     protected static Image createIcon(String path,String description){
         URL imageURL = MiniServer.class.getResource(path);
@@ -114,11 +111,10 @@ public class MiniServer {
 
     /**
      * Create a new Server Instance and initiate it.
-     * @param args
+     * @param args arguments
      */
     public static void main(String[] args) {
         MiniServer ms = new MiniServer();
-        SystemTray.getSystemTray();
         ms.init_server();
 
     }
